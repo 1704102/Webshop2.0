@@ -68,6 +68,13 @@ public class Controller {
         return null;
     }
 
+    public static int getUser(String name){
+        for (User user: users){
+            if (user.getToken().equals(name)) return user.getId();
+        }
+        return 0;
+    }
+
     public static void addProduct(JSONObject input){
         String name = input.getString("name");
         String picture = input.getString("picture");

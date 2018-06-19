@@ -26,35 +26,29 @@
 
     <input type="button" value="buy" onclick="buy()">
 
-    <form id="regForm" action="" style="display: none;">
+    <form id="regForm" style="display: none;">
 
-        <h1>Register:</h1>
+        <h1>Afrekenen:</h1>
 
-        <div class="tab">Name:
-            <p><input placeholder="First name..." oninput="this.className = ''"></p>
-            <p><input placeholder="Last name..." oninput="this.className = ''"></p>
+        <div class="tab">Adres:
+            <p><input id="city" placeholder="Stad" oninput="this.className = ''"></p>
+            <p><input id="street" placeholder="Straat + nummer" oninput="this.className = ''"></p>
+            <p><input id="zipCode" placeholder="Postcode" oninput="this.className = ''"></p>
         </div>
 
-        <div class="tab">Contact Info:
-            <p><input placeholder="E-mail..." oninput="this.className = ''"></p>
-            <p><input placeholder="Phone..." oninput="this.className = ''"></p>
-        </div>
-
-        <div class="tab">Address:
-            <p><input placeholder="City" oninput="this.className = ''"></p>
-            <p><input placeholder="Street + number" oninput="this.className = ''"></p>
-            <p><input placeholder="ZipCode" oninput="this.className = ''"></p>
+        <div class="tab">Overzicht:
+            <div id="overView"></div>
+            <p> Mijn bestelling klopt: <input id="confirmation" type="checkbox" oninput="this.className = ''"></p>
         </div>
 
         <div style="overflow:auto;">
             <div style="float:right;">
-                <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">Terug</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Volgende</button>
             </div>
         </div>
-        
+
         <div style="text-align:center;margin-top:40px;">
-            <span class="step"></span>
             <span class="step"></span>
             <span class="step"></span>
         </div>
@@ -75,17 +69,17 @@
                 "<td>" + (input.price * cart[data].amount).toFixed(2) + "</td>" +
                 "</tr>");
         }
+        $("#overView").append($("#shoppingCart").clone());
     }
 
     function buy() {
         $("#regForm").css("display", "block");
     }
 
-    var currentTab = 0; // Current tab is set to be the first tab (0)
-    showTab(currentTab); // Display the current tab
+    var currentTab = 0;
+    showTab(currentTab);
 
     function showTab(number) {
-        // This function will display the specified tab of the form ...
         var tab = $(".tab");
         for (var i = 0; i < tab.length; i++){
             if (i == number){
@@ -97,30 +91,22 @@
         if (number == tab.length - 1){
             console.log($("#nextBtn"));
             $("#nextBtn").empty();
-            $("#nextBtn").append('Submit');
+            $("#nextBtn").append('Opsturen');
         }else{
             $("#nextBtn").empty();
-            $("#nextBtn").append('Next');
+            $("#nextBtn").append('Volgende');
         }
         fixStepIndicator(number);
     }
 
-    function nextPrev(n) {
-        // This function will figure out which tab to display
-        var x = document.getElementsByClassName("tab");
-        // Exit the function if any field in the current tab is invalid:
-        //if (n == 1 && !validateForm()) return false;
-        // Hide the current tab:
-        x[currentTab].style.display = "none";
-        // Increase or decrease the current tab by 1:
-        currentTab = currentTab + n;
-        // if you have reached the end of the form... :
-        if (currentTab >= x.length) {
-            //...the form gets submitted:
-            document.getElementById("regForm").submit();
+    function nextPrev(number) {
+        var tab = $(".tab");
+        $(tab[number]).css("display", "none");
+        currentTab = currentTab + number;
+        if (currentTab >= tab.length) {
+            submitOrder();
             return false;
         }
-        // Otherwise, display the correct tab:
         showTab(currentTab);
     }
 
@@ -136,6 +122,28 @@
         }
         steps[n].className += " active finish";
     }
+
+    function submitOrder() {
+        var city = $("#city").val();
+        var street = $("#street").val();
+        var zipCode = $("#zipCode").val();
+
+        if ($("#confirmation").is(':checked')){
+            confirmation = true;
+        }else{
+            confirmation = false;
+        }
+
+        var data = JSON.parse("{}");
+        data["street"] = street;
+        data["city"] = city;
+        data["zipCode"] = zipCode;
+        data["shoppingCart"] = JSON.parse(sessionStorage.getItem('shoppingCart'));
+        data["token"] = sessionStorage.getItem("token");
+        putCall(data, "rest/order");
+        console.log(confirmation);
+    }
+
 </script>
 </body>
 </html>
