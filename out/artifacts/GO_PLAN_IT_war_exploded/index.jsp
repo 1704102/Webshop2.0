@@ -31,11 +31,11 @@
       data["username"] = $("#username").val();
       data["password"] = $("#password").val();
 
-      var output = postCall(data, 'rest/login','text');
+      var output = postCall(data, 'rest/login','json');
 
       if (output != "not valid credentials"){
           sessionStorage.setItem("token", output);
-          window.location.href = "home.jsp";
+          // window.location.href = "home.jsp";
       }else{
           $("#error").css("display", "block");
       }

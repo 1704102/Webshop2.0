@@ -4,6 +4,7 @@ import com.example.jersey.controller.Controller;
 import com.example.jersey.model.Aanbieding;
 import com.example.jersey.model.Category;
 import com.example.jersey.model.Product;
+import org.json.JSONObject;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -114,4 +115,33 @@ public class ProductDatabase extends DatabaseHelper{
     }
 
 
+    public void deleteProduct(int id) {
+        connect();
+        try {
+            PreparedStatement statement = connection.prepareStatement("delete from product where id = ?");
+            statement.setInt(1,id);
+            statement.execute();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        disconnect();
+    }
+
+    public void alterProduct(JSONObject input) {
+        connect();
+        try {
+            PreparedStatement statement = connection.prepareStatement("update product set naam = ?, plaatje = ?, prijs = ?, omschrijving = ? where id = ? ");
+            statement.setString(1,input.getString("name"));
+            statement.setString(2,input.getString("image"));
+            statement.setFloat(3,input.getFloat("price"));
+            statement.setString(4,input.getString("description"));
+            statement.setInt(5, input.getInt("id"));
+            statement.execute();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        disconnect();
+    }
 }

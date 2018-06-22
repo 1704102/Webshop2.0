@@ -104,4 +104,14 @@ public class Controller {
         }
         return output;
     }
+
+    public static void alterProduct(JSONObject input) {
+        ProductDatabase database = new ProductDatabase();
+        database.alterProduct(input);
+    }
+
+    public static void deleteProduct(int id) {
+        ProductDatabase database = new ProductDatabase();
+        database.deleteProduct(id);
+    }
 }

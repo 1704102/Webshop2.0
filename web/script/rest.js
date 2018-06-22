@@ -17,6 +17,7 @@ function getCall(rest, dataType) {
 
 function postCall(input, rest, dataType) {
     var output = "";
+    console.log(JSON.stringify(input));
     $.ajax({
         type: "POST",
         async: false,

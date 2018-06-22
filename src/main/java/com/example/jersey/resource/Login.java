@@ -3,10 +3,13 @@ import com.example.jersey.controller.Controller;
 import com.example.jersey.database.DatabaseHelper;
 import com.example.jersey.database.LoginDatabase;
 import com.example.jersey.model.User;
+import com.sun.jersey.api.NotFoundException;
+import netscape.security.ForbiddenTargetException;
 import org.json.JSONObject;
 
 import javax.ws.rs.*;
-import java.sql.PreparedStatement;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/login")
 public class Login {
@@ -20,24 +23,32 @@ public class Login {
     }
 
     @POST
-    @Consumes("application/json")
-    public String create(String x) {
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Response create(String x){
 
         LoginDatabase database = new LoginDatabase();
         User user = database.login(new JSONObject(x));
         if (user != null){
             Controller.addUser(user);
-            return user.getToken();
+            JSONObject object = new JSONObject();
+            object.put("token", user.getToken());
+            return Response.ok(object.toString()).build();
         }else {
-            return "not valid credentials";
+            return javax.ws.rs.core.Response.status(404).build();
         }
 
     }
 
     @GET
-    @Path("/id/{token}")
+    @Path("/user/{id}")
     @Consumes("application/json")
-    public String getUser(@PathParam("token") String id) {
-        return new JSONObject(Controller.getUser(Integer.parseInt(id))).toString();
+    public Response getUser(@PathParam("id") int id) {
+        User user = Controller.getUser(id);
+        if (user == null){
+            return javax.ws.rs.core.Response.status(403).build();
+        }else {
+            return Response.ok(new JSONObject(user).toString()).build();
+        }
+
     }
 }
