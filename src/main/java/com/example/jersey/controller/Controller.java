@@ -68,11 +68,18 @@ public class Controller {
         return null;
     }
 
-    public static int getUser(String name){
+    public static int getUser(String token){
         for (User user: users){
-            if (user.getToken().equals(name)) return user.getId();
+            if (user.getToken().equals(token)) return user.getId();
         }
         return 0;
+    }
+
+    public static User getUser(int id){
+        for (User user: users){
+            if (user.getId() == id) return user;
+        }
+        return null;
     }
 
     public static void addProduct(JSONObject input){

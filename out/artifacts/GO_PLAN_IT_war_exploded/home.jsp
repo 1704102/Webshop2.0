@@ -27,15 +27,25 @@
         postCall(input,  'rest/category', 'json');
 
         addProducts(getCall('rest/products/aanbieding', 'json'));
-
         function addProducts(data) {
             for (dat in data){
-                var input = data[dat];;
-                $("#products").append(  "<div class ='product'>" +
-                                        "<div class='id'>" + input.id + "</div>"+
-                                        "<div class='name'> name : " + input.name + "</div>"+
-                                        "<div class='price'> price : " + "<div class='old'> "+input.price + "</div> " + " " + input.aanbieding.price + "</div>"+
-                                        "</div>");
+                var input = data[dat];
+                if (input.aanbieding != undefined){
+                    $("#products").append(  "<div class ='product'>" +
+                        "<div class='id'>" + input.id + "</div>"+
+                        "<div class='name'> name : " + input.name + "</div>"+
+                        "<div class='price'> price : " + "<div class='old'> "+input.price + "</div> " + " " + input.aanbieding.price + "</div>"+
+                        "</div>");
+                    $("#products").append("<div style='display: block; width: 10px;'>.</div>");
+                }else{
+                    $("#products").append(  "<div class ='product'>" +
+                        "<div class='id'>" + input.id + "</div>"+
+                        "<div class='name'> name : " + input.name + "</div>"+
+                        "<div class='price'> price : " + " " + input.price + "</div>"+
+                        "</div>");
+                    $("#products").append("<div style='display: block; width: 10px;'>.</div>");
+                }
+
             }
         }
 

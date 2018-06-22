@@ -11,12 +11,20 @@
     <title>Title</title>
     <script src="script/jquery-3.2.1.min.js"></script>
     <script src="script/rest.js"></script>
+    <style>
+        #price * {display: inline-block   }
+        .old{
+            display: inline-block;
+            text-decoration: line-through;
+        }
+    </style>
 </head>
 <body>
 <div>
     <div id="name"> name: </div>
     <div id="price"> price: </div>
     <div id="description"> description: </div>
+    <div id="product"></div>
     <input type="button" value="buy" onclick="buyProduct()">
 </div>
 
@@ -45,7 +53,14 @@
     input["id"] = id;
     var product = postCall(input, 'rest/product', 'json');
     $("#name").append(product.name);
-    $("#price").append(product.price);
+    if (product.aanbieding == undefined){
+        $("#price").append(product.price);
+    }else{
+        $("#price").append("<div class='old'>" +product.price + "</div> " + " " + "<div>" + product.aanbieding.price + "</div>");
+        $("#product").append("<div>" + " aanbiedingsperiode : "+ product.aanbieding.begin + " - " + product.aanbieding.end + "</div>");
+        $("#product").append("aanbieding omschrijving: " +product.aanbieding.text);
+    }
+
     $("#description").append(product.description);
 </script>
 </body>

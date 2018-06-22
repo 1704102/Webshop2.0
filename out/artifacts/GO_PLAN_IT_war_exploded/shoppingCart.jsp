@@ -12,6 +12,13 @@
     <script src="script/jquery-3.2.1.min.js"></script>
     <script src="script/rest.js"></script>
     <link rel="stylesheet" type="text/css" href="css/wizard.css">
+    <style>
+        .amount *{display: inline-block}
+        .amount input{width: 41px;
+            height: 41px;}
+        #shoppingCart{width:800px;}
+        #shoppingCart *{text-align: center}
+    </style>
 </head>
 <body>
 <div>
@@ -59,17 +66,39 @@
 <script>
     initialiseShoppingCart();
     function initialiseShoppingCart() {
+        $("#shoppingCart").empty();
+        $("#shoppingCart").append("<tr>\n" +
+            "            <th>name</th>\n" +
+            "            <th>amount</th>\n" +
+            "            <th>price</th>\n" +
+            "            <th>total</th>\n" +
+            "        </tr>");
         var cart = JSON.parse(sessionStorage.getItem("shoppingCart"));
         for(data in cart){
             var input = postCall(cart[data], 'rest/product', 'json');
             $("#shoppingCart").append("<tr>" +
                 "<td>" + input.name + "</td>" +
-                "<td>" + cart[data].amount + "</td>" +
+                "<td class='amount'> <input type='button' value='-' onclick='alterAmount(" + input.id + " , -1)'>" +  cart[data].amount + " <input type='button' value='+' onclick='alterAmount(" + input.id + " , 1)'></td>" +
                 "<td>" + input.price + "</td>" +
                 "<td>" + (input.price * cart[data].amount).toFixed(2) + "</td>" +
+                "<td><input type='button' value='x' onclick='deleteProduct(" + input.id + ")'></td>" +
                 "</tr>");
         }
+        $("#overView").empty();
         $("#overView").append($("#shoppingCart").clone());
+    }
+
+    function deleteProduct(number) {
+        var cart = JSON.parse(sessionStorage.getItem("shoppingCart"));
+        for(var i = 0; i < cart.length; i++) {
+            if (cart[i].id == number){
+                delete cart[i];
+            }
+
+        }
+        var output = JSON.stringify(cart);
+        sessionStorage.setItem('shoppingCart',JSON.stringify(cart).replace(",null", ""));
+        initialiseShoppingCart();
     }
 
     function buy() {
@@ -134,16 +163,52 @@
             confirmation = false;
         }
 
-        var data = JSON.parse("{}");
-        data["street"] = street;
-        data["city"] = city;
-        data["zipCode"] = zipCode;
-        data["shoppingCart"] = JSON.parse(sessionStorage.getItem('shoppingCart'));
-        data["token"] = sessionStorage.getItem("token");
-        putCall(data, "rest/order");
-        console.log(confirmation);
+        if (validate()){
+            var data = JSON.parse("{}");
+            data["street"] = street;
+            data["city"] = city;
+            data["zipCode"] = zipCode;
+            data["shoppingCart"] = JSON.parse(sessionStorage.getItem('shoppingCart'));
+            data["token"] = sessionStorage.getItem("token");
+            putCall(data, "rest/order");
+            console.log(confirmation);
+            alert("order verwerkt!");
+            window.location.href = "home.jsp";
+        }
+
     }
 
+    function alterAmount(id, number) {
+        console.log(id);
+        console.log(number);
+        var cart = JSON.parse(sessionStorage.getItem("shoppingCart"));
+        for (item in cart){
+            if (cart[item].id == id){
+                if (cart[item].amount + number > 0){
+                    cart[item].amount = cart[item].amount + number;
+                }
+            }
+        }
+        sessionStorage.setItem("shoppingCart", JSON.stringify(cart));
+        initialiseShoppingCart();
+    }
+
+    function validate() {
+        if ($("#city").val() != "" && $("#city").val() != "" && $("#city").val() != ""){
+            if (!$("#confirmation").is(':checked')){
+            alert("klik op het vinkje");
+            nextPrev(-1)
+            return false;
+        }
+
+            return true;
+        }else{
+            nextPrev(-1)
+            alert("validatie mislukt");
+            return false;
+        }
+
+    }
 </script>
 </body>
 </html>

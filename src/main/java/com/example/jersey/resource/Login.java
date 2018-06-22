@@ -33,4 +33,11 @@ public class Login {
         }
 
     }
+
+    @GET
+    @Path("/id/{token}")
+    @Consumes("application/json")
+    public String getUser(@PathParam("token") String id) {
+        return new JSONObject(Controller.getUser(Integer.parseInt(id))).toString();
+    }
 }
